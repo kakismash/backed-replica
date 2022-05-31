@@ -1,7 +1,22 @@
 const app = require('express')();
+
+app.use((req, res, next) => {
+    res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "'Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token'",
+    });
+
+    next();
+});
+
 const fs = require('fs');
 const hls = require('hls-server');
 const { default: Hls } = require('hls.js');
+const { Server } = require("socket.io");
+const http = require('http');
+const serverSocket = http.createServer(app);
+const io = new Server(serverSocket);
 
 const hlsC = require('hls.js');
 
@@ -10,7 +25,6 @@ app.get('/', (req, res) => {
 });
 
 // const h = new Hls({startPosition: 30});
-
 
 const server = app.listen(3000);
 
@@ -40,4 +54,23 @@ new hls(server, {
             cb(null, stream);
         }
     }
+});
+
+io.on('connection', socket => {
+
+    console.log('user connected');
+    console.log(socket.id);
+    
+    socket.on('message', message => {
+        socket.broadcast.emit("message", message);
+        socket.emit('message', message);
+    
+    });
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
+
+serverSocket.listen(4444, () => {
+    console.log('Listening on port 4444');
 });
