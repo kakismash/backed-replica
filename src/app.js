@@ -64,8 +64,12 @@ io.on('connection', socket => {
     socket.on('message', message => {
         socket.broadcast.emit("message", message);
         socket.emit('message', message);
-    
     });
+
+    socket.on('timePlayer', time => {
+        socket.broadcast.emit('timePlayer', time);
+    });
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
