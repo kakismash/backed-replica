@@ -66,8 +66,15 @@ io.on('connection', socket => {
         socket.emit('message', message);
     });
 
-    socket.on('timePlayer', time => {
-        socket.broadcast.emit('timePlayer', time);
+    socket.on('timePlayer', tP => {
+        console.log(tP.time);
+        console.log(tP.socketId);
+        socket.broadcast.emit('timePlayer', {type: 'broadcast', message: tP.time, requester: tP.socketId});
+    });
+
+    socket.on('requestedTimeVideoSync', () => {
+        console.log('requestedTimeVideoSync');
+        socket.broadcast.emit('timePlayer', {type: 'request', requester: socket.id});
     });
 
     socket.on('disconnect', () => {
