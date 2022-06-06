@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 
 // const h = new Hls({startPosition: 30});
-
+let masterSocketId = '';
 const server = app.listen(3000);
 
 new hls(server, {
@@ -59,7 +59,12 @@ new hls(server, {
 io.on('connection', socket => {
 
     console.log('user connected');
-    console.log(socket.id);
+    console.log('masterSocketId', masterSocketId);
+    // console.log(socket.id);
+    if (masterSocketId === '') {
+        // console.log('Assigning masterSocketId');
+        masterSocketId = socket.id;
+    }
     
     socket.on('message', message => {
         socket.broadcast.emit("message", message);
@@ -67,18 +72,25 @@ io.on('connection', socket => {
     });
 
     socket.on('timePlayer', tP => {
-        console.log(tP.time);
-        console.log(tP.socketId);
-        socket.broadcast.emit('timePlayer', {type: 'broadcast', message: tP.time, requester: tP.socketId});
+        
+        if (masterSocketId === socket.id) {
+            console.log('1timePlayer: ')
+            console.log(tP.time);
+            console.log(tP.socketId);
+            socket.broadcast.emit('timePlayer', {type: 'broadcast', message: tP.time, requester: tP.socketId});
+        }
     });
 
     socket.on('requestedTimeVideoSync', () => {
-        console.log('requestedTimeVideoSync');
         socket.broadcast.emit('timePlayer', {type: 'request', requester: socket.id});
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log(io.allSockets());
+        //console.log('user disconnected');
+        if (socket.id === masterSocketId) {
+            masterSocketId = io.allSockets()[0];
+        }
     });
 });
 
