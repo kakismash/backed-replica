@@ -61,7 +61,7 @@ io.on('connection', socket => {
     console.log('user connected');
     console.log('masterSocketId', masterSocketId);
     // console.log(socket.id);
-    if (masterSocketId === '') {
+    if (masterSocketId === '' || masterSocketId === undefined) {
         // console.log('Assigning masterSocketId');
         masterSocketId = socket.id;
     }
