@@ -89,8 +89,12 @@ io.on('connection', socket => {
         console.log(io.allSockets());
         //console.log('user disconnected');
         if (socket.id === masterSocketId) {
-            masterSocketId = io.allSockets()[0];
-        }
+            
+            io.allSockets().then(v => {
+                console.log('v: ', v);
+                masterSocketId = [...v][0];
+            });
+        } 
     });
 });
 
