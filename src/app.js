@@ -78,8 +78,17 @@ io.on('connection', socket => {
             console.log('tP.time = ', tP.time);
             console.log('tP.socketId = ', tP.socketId);
 
+            const issued = socket.handshake.issued
+            console.log('issued', issued)
             console.log('time', socket.handshake.time)
-            console.log('issued', socket.handshake.issued)
+
+            const date = new Date();
+            const currentDate = date.getTime();
+            console.log('current date', currentDate)
+            console.log('date', date)
+
+            let restTime = currentDate - issued;
+            console.log(restTime)
             socket.broadcast.emit('timePlayer', {type: 'broadcast', message: tP.time, requester: tP.socketId});
         }
     });
