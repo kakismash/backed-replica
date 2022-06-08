@@ -72,11 +72,14 @@ io.on('connection', socket => {
     });
 
     socket.on('timePlayer', tP => {
-        
+
         if (masterSocketId === socket.id) {
             console.log('1timePlayer: ')
-            console.log(tP.time);
-            console.log(tP.socketId);
+            console.log('tP.time = ', tP.time);
+            console.log('tP.socketId = ', tP.socketId);
+
+            console.log('time', socket.handshake.time)
+            console.log('issued', socket.handshake.issued)
             socket.broadcast.emit('timePlayer', {type: 'broadcast', message: tP.time, requester: tP.socketId});
         }
     });
@@ -84,6 +87,12 @@ io.on('connection', socket => {
     socket.on('requestedTimeVideoSync', () => {
         socket.broadcast.emit('timePlayer', {type: 'request', requester: socket.id});
     });
+
+    socket.on('time', time => {
+        console.log('time test', time)
+        socket.broadcast.emit("time", time);
+        socket.emit('time', time);
+    })
 
     socket.on('disconnect', () => {
         console.log(io.allSockets());
